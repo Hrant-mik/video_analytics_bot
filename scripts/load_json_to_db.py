@@ -3,9 +3,6 @@ import psycopg2
 from psycopg2.extras import execute_values
 from app.db import DB_CONFIG
 
-# ============================================
-# ԿԱՊԸ POSTGRESQL-Ի ՀԵՏ
-# ============================================
 def get_connection():
     return psycopg2.connect(
         dbname=DB_CONFIG["dbname"],
@@ -15,9 +12,7 @@ def get_connection():
         port=DB_CONFIG.get("port", 5432)
     )
 
-# ============================================
-# Ստեղծել աղյուսակները, եթե չկան
-# ============================================
+
 def create_tables():
     conn = get_connection()
     cur = conn.cursor()
@@ -57,9 +52,7 @@ def create_tables():
     conn.close()
     print("Tables created successfully.")
 
-# ============================================
-# JSON-ից բեռնել տվյալները DB
-# ============================================
+
 def load_json(json_file="data/videos.json"):
     conn = get_connection()
     cur = conn.cursor()
@@ -68,7 +61,6 @@ def load_json(json_file="data/videos.json"):
         data = json.load(f)
 
     for video in data["videos"]:
-        # Videos աղյուսակում
         cur.execute("""
             INSERT INTO videos (
                 id, creator_id, video_created_at,
@@ -86,7 +78,7 @@ def load_json(json_file="data/videos.json"):
             video["reports_count"],
         ))
 
-        # Video_snapshots աղյուսակում
+
         for snap in video.get("snapshots", []):
             cur.execute("""
                 INSERT INTO video_snapshots (
@@ -115,9 +107,7 @@ def load_json(json_file="data/videos.json"):
     conn.close()
     print("JSON data loaded successfully.")
 
-# ============================================
-# Գլխավոր ֆունկցիա
-# ============================================
+
 if __name__ == "__main__":
     create_tables()
     load_json()
